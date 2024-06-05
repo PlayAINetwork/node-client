@@ -112,7 +112,12 @@ if __name__ == '__main__':
     # Add a job that calls the external API every minute
     scheduler.add_job(call_external_api, 'interval', minutes=0.5)
     print('Scheduler started. Press Ctrl+C to exit.')
+  
+    scheduler.start()
+  
+    # Keep the script running
     try:
-        scheduler.start()
-    except KeyboardInterrupt:
-        print('Scheduler stopped manually.')
+        while True:
+            pass
+    except (KeyboardInterrupt, SystemExit):
+        print("Exiting...")

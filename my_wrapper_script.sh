@@ -3,10 +3,12 @@
 # Start process.py in the background
 
 
-python app.py &
+python pull-service.py &
 FILE1_PID=$!
 
-python pull-service.py
+python app.py
+
+
 
 
 

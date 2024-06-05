@@ -110,7 +110,6 @@ if __name__ == '__main__':
     # Configure the scheduler with a timezone (using pytz)
     print("hi")
     scheduler = BackgroundScheduler(timezone='UTC')
-    print("hihi")
     # Add a job that calls the external API every minute
     scheduler.add_job(call_external_api, 'interval', minutes=0.5)
     print('Scheduler started. Press Ctrl+C to exit.')

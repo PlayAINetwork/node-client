@@ -1,14 +1,16 @@
 #!/bin/bash
 
 
+
+# Start pull-service.py in the foreground (assuming it should run in the foreground)
+python pull-service.py &
+PULL_SERVICE_PID=$!
+
 # Start app.py with Gunicorn in the background
 gunicorn -b 0.0.0.0:$PORT app:app &
 APP_PID=$!
 
 
-# Start pull-service.py in the foreground (assuming it should run in the foreground)
-python pull-service.py &
-PULL_SERVICE_PID=$!
 
 cleanup() {
     echo "Stopping services..."

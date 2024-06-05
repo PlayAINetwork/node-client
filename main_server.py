@@ -20,4 +20,5 @@ def confirm_task():
     return jsonify({'task':"confrimed"})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=4000)
+   port = int(os.getenv('PORT', 4000))
+   app.run(host='0.0.0.0', port=port)

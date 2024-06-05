@@ -1,15 +1,14 @@
 #!/bin/bash
 
-# Start process.py with Gunicorn in the background
-gunicorn -b 0.0.0.0:5000 process:app &
+gunicorn -b 0.0.0.0:$PORT process:app &
 PROCESS_PID=$!
 
 # Start main_server.py with Gunicorn in the background
-gunicorn -b 0.0.0.0:4000 main_server:app &
+gunicorn -b 0.0.0.0:$PORT main_server:app &
 MAIN_SERVER_PID=$!
 
 # Start app.py with Gunicorn in the background
-gunicorn -b 0.0.0.0:3000 app:app &
+gunicorn -b 0.0.0.0:$PORT app:app &
 APP_PID=$!
 
 

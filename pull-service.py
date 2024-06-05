@@ -1,5 +1,5 @@
 
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import jsonify
 import requests
 import time
@@ -108,7 +108,7 @@ def call_external_api():
 
 if __name__ == '__main__':
     # Configure the scheduler with a timezone (using pytz)
-    scheduler = BlockingScheduler(timezone=timezone('UTC'))
+    scheduler = BackgroundScheduler(timezone='UTC')
     # Add a job that calls the external API every minute
     scheduler.add_job(call_external_api, 'interval', minutes=0.5)
     print('Scheduler started. Press Ctrl+C to exit.')

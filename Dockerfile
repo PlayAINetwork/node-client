@@ -13,7 +13,7 @@ COPY process.py /app/process.py
 COPY main_server.py /app/main_server.py
 COPY my_wrapper_script.sh /app/my_wrapper_script.sh
 COPY requirements.txt /app/requirements.txt
-COPY .env /app/.env
+
 COPY app.py /app/app.py
 
 # Install any needed packages specified in requirements.txt

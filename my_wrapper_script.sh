@@ -1,11 +1,5 @@
 #!/bin/bash
 
-gunicorn -b 0.0.0.0:$PORT process:app &
-PROCESS_PID=$!
-
-# Start main_server.py with Gunicorn in the background
-gunicorn -b 0.0.0.0:$PORT main_server:app &
-MAIN_SERVER_PID=$!
 
 # Start app.py with Gunicorn in the background
 gunicorn -b 0.0.0.0:$PORT app:app &
@@ -18,7 +12,7 @@ PULL_SERVICE_PID=$!
 
 cleanup() {
     echo "Stopping services..."
-    kill $PROCESS_PID $MAIN_SERVER_PID $APP_PID $PULL_SERVICE_PID
+    kill  $APP_PID $PULL_SERVICE_PID
     exit
 }
 
@@ -27,14 +21,6 @@ trap cleanup INT TERM
 
 # Monitor all processes
 while true; do
-    if ! kill -0 $PROCESS_PID >/dev/null 2>&1; then
-        echo "process.py has exited."
-        exit 1
-    fi
-    if ! kill -0 $MAIN_SERVER_PID >/dev/null 2>&1; then
-        echo "main_server.py has exited."
-        exit 1
-    fi
     if ! kill -0 $APP_PID >/dev/null 2>&1; then
         echo "app.py has exited."
         exit 1

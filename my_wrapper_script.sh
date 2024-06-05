@@ -5,7 +5,7 @@
 python app.py &
 FILE1_PID=$!
 
-python pull-service.py &
+python pull-service.py 2>&1 &
 FILE2_PID=$!
 
 

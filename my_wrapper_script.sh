@@ -2,12 +2,12 @@
 
 # Start process.py in the background
 
+python app.py &
+FILE1_PID=$!
 
 python pull-service.py &
 FILE2_PID=$!
 
-python app.py &
-FILE1_PID=$!
 
 
 cleanup() {

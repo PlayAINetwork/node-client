@@ -2,12 +2,12 @@
 
 # Start process.py in the background
 
+
+python pull-service.py
+
 python app.py &
 FILE1_PID=$!
 
-
-
-python pull-service.py
 
 cleanup() {
     echo "Stopping services..."

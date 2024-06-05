@@ -7,7 +7,7 @@ python pull-service.py &
 PULL_SERVICE_PID=$!
 
 # Start app.py with Gunicorn in the background
-gunicorn -b 0.0.0.0:$PORT app:app &
+python app.py &
 APP_PID=$!
 
 

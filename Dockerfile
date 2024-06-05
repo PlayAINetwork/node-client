@@ -9,8 +9,8 @@ WORKDIR /app
 
 # Copy the Python scripts and requirements.txt into the container
 COPY pull-service.py /app/pull-service.py
-COPY process.py /app/process.py
-COPY main_server.py /app/main_server.py
+#COPY process.py /app/process.py
+#COPY main_server.py /app/main_server.py
 COPY my_wrapper_script.sh /app/my_wrapper_script.sh
 COPY requirements.txt /app/requirements.txt
 

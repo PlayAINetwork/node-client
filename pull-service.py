@@ -107,7 +107,7 @@ def call_external_api():
         print(f"Request to API failed: {str(e)}")
 
 if __name__ == '__main__':
-    # Configure the scheduler with a timezone (using pytz)
+    # Configure the scheduler with a timezone
     print("hi")
     scheduler = BackgroundScheduler(timezone='UTC')
     # Add a job that calls the external API every minute

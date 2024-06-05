@@ -19,7 +19,7 @@ cleanup() {
 }
 
 
-# Trap termination signals
+# Trap termination signals together
 trap cleanup INT TERM
 
 

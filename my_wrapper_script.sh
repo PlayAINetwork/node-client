@@ -2,11 +2,9 @@
 
 # Start process.py in the background
 
-python app.py &
-FILE1_PID=$!
+python app.py
 
-python pull-service.py 2>&1 &
-FILE2_PID=$!
+python pull-service.py
 
 
 

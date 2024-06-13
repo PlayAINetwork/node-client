@@ -23,14 +23,14 @@ def sign_s3_url(task_id,s3_url,user_private_key,wallet):
         print(hex(s))
         is_valid = True 
         params = {
-        'is_valid':True,
         'taskId':task_id,
         'operatorId':wallet,
         'messageHash':msghash,
         'signature':signature,
-        'v':v,
-        'r':r,
-        's':s
+        'v':hex(v),
+        'r':hex(r),
+        's':hex(s),
+        's3Url':s3_url
     }
         return is_valid, params
     except Exception as e:

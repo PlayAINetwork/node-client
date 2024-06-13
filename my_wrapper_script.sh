@@ -3,6 +3,7 @@
 # Start the task getting service in the background
 
 
+
 python pull-service.py &
 FILE1_PID=$!
 

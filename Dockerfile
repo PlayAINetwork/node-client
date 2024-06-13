@@ -11,7 +11,6 @@ COPY . .
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-RUN apt-get update && apt-get install -y iproute2
 
 
 RUN chmod +x my_wrapper_script.sh

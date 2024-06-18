@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 from datetime import datetime
 from pytz import timezone
 from process import sign_s3_url
+from eth_account import Account
+from eth_account.messages import defunct_hash_message
+
 
 
 load_dotenv()
@@ -71,7 +74,7 @@ def call_external_api():
             data = response.json()
             task_id = data.get('task_id')
             if not task_id:
-                print("taskId not found in API response.")
+                print("No task assigned at the moment")
                 return
             # Taskid passed to process_url() fucntion
             result = process_url(task_id)
@@ -84,10 +87,51 @@ def call_external_api():
 
 
 
+def register_node():
+    user_private_key = os.getenv('USER_PRIVATE_KEY')
+    main_server = os.getenv('MAIN_SERVER')
+    api_url = f"{main_server}/register"
+    headers = {"Content-Type": "application/json"}
+    token_id = os.getenv('NFT_TOKEN_ID')
+    ip= os.getenv('IP')
+    port = os.getenv('PORT')
+    msghash = defunct_hash_message(text="\x19Ethereum Signed Message:\n32" + token_id)
+    signedMesaage=Account.signHash(msghash,user_private_key)
+    msghash=signedMesaage['messageHash'].hex()
+    signature=signedMesaage['signature'].hex()
+    v = signedMesaage['v']
+    r = signedMesaage['r']
+    s = signedMesaage['s']
+    params = {
+        'keyId':token_id,
+        'messageHash':msghash,
+        'v':hex(v),
+        'r':hex(r),
+        's':hex(s),
+        'ip':ip,
+        'port':port
+    }
+ 
+    try:
+            # Make POST request to /confrim endpoint
+            response = requests.post(api_url, json=params, headers=headers)
+            # Check if request was successful (status code 200)
+            if response.status_code == 200:
+                return response.json()  
+            else:
+                return {'error': f'Request failed with status code {response.status_code}'}
+    except requests.exceptions.RequestException as e:
+            return {'error': f'Request failed: {str(e)}'}
+
 
 
 if __name__ == '__main__':
     # Configure the scheduler with a timezone
+    if register_node():
+        print('Node regsitration successful')
+    else:
+         print('Node regsitration unsuccesful')
+         exit()
     scheduler = BackgroundScheduler(timezone='UTC')
     # Add a job that calls the external API every minute to get the task
     scheduler.add_job(call_external_api, 'interval', minutes=0.5)

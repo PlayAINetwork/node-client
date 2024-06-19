@@ -17,10 +17,6 @@ def sign_s3_url(task_id,s3_url,user_private_key,wallet):
         v = signedMesaage['v']
         r = signedMesaage['r']
         s = signedMesaage['s']
-        print(signedMesaage)
-        print(hex(v))
-        print(hex(r))
-        print(hex(s))
         is_valid = True 
         params = {
         'taskId':task_id,

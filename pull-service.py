@@ -26,6 +26,7 @@ def process_url(task_id):
     headers = {"Content-Type": "application/json"}
     # Call taskInfo_endpoint function with retrieved taskId to get the s3 url
     try:
+        print("Getting additional task info")
         response = requests.get(api_url, headers=headers)
         if response.status_code == 200:
             data = response.json()
@@ -43,6 +44,7 @@ def process_url(task_id):
 
     # if the process was completed, calling the /confrim endpoint in the main function to confrim the task
     if is_valid:
+        print("Sending verified task to backend")
         url = f"{main_server}/confirm"
         headers = {"Content-Type": "application/json"}
         try:
@@ -69,6 +71,7 @@ def call_external_api():
     headers = {"Content-Type": "application/json"}
     #calling the task endpoint and getting taskId 
     try:
+        print("Calling the backend for active tasks")
         response = requests.get(api_url, headers=headers)
         if response.status_code == 200:
             data = response.json()
@@ -78,7 +81,7 @@ def call_external_api():
                 return
             # Taskid passed to process_url() fucntion
             result = process_url(task_id)
-            print(f"Result from process_url_endpoint: {result}")
+            print(f"Result of the task: {result}")
         else:
             print(f"Failed to fetch data from API. Status code: {response.status_code}")
     except requests.exceptions.RequestException as e:
@@ -117,9 +120,9 @@ def register_node():
             response = requests.post(api_url, json=params, headers=headers)
             # Check if request was successful (status code 200)
             if response.status_code == 200:
-                return response.json()  
+                return True 
             else:
-                return {'error': f'Request failed with status code {response.status_code}'}
+                return False
     except requests.exceptions.RequestException as e:
             return {'error': f'Request failed: {str(e)}'}
 

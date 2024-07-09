@@ -3,10 +3,22 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 from eth_account import Account
 from eth_account.messages import defunct_hash_message
+import logging
 
 
 
 load_dotenv()
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('app.log'),  # Log to a file
+        logging.StreamHandler()          # Log to the console
+    ]
+)
+
 
 def sign_s3_url(task_id,s3_url,user_private_key,wallet):
     try:

@@ -4,18 +4,27 @@ from flask import jsonify
 import requests
 import time
 import os
+import logging
 from dotenv import load_dotenv
 from datetime import datetime
 from pytz import timezone
 from process import sign_s3_url
 from eth_account import Account
 from eth_account.messages import defunct_hash_message
+import platform,socket,json,psutil,logging,re,uuid
 
 
 
 load_dotenv()
 
-
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('app.log'),  # Log to a file
+        logging.StreamHandler()          # Log to the console
+    ]
+)
 
 
 def process_url(task_id):
@@ -90,6 +99,26 @@ def call_external_api():
 
 
 
+def getSystemInfo():
+    try:
+        info={}
+        info['platform']=platform.system()
+        info['platform-release']=platform.release()
+        info['platform-version']=platform.version()
+        info['architecture']=platform.machine()
+        info['hostname']=socket.gethostname()
+        info['ip-address']=socket.gethostbyname(socket.gethostname())
+        info['mac-address']=':'.join(re.findall('..', '%012x' % uuid.getnode()))
+        info['processor']=platform.processor()
+        info['ram']=str(round(psutil.virtual_memory().total / (1024.0 **3)))+" GB"
+        info['physical_cores'] = psutil.cpu_count(logical=False)
+        info['logical_cores'] = psutil.cpu_count(logical=True)
+        info['cpu_usage'] = psutil.cpu_percent(interval=1)
+        return info
+    except Exception as e:
+        logging.exception(e)
+
+
 def register_node():
     user_private_key = os.getenv('USER_PRIVATE_KEY')
     main_server = os.getenv('MAIN_SERVER')
@@ -114,14 +143,20 @@ def register_node():
         'ip':ip,
         'port':port
     }
- 
+    info=getSystemInfo()
+    print(info)
     try:
             # Make POST request to /confrim endpoint
             response = requests.post(api_url, json=params, headers=headers)
             # Check if request was successful (status code 200)
             if response.status_code == 200:
-                return True 
+                 data = response.json()
+                 id = data.get('id')
+                 print('Node regsitration successful')
+                 print(f"Your unique id is : {id}")
+                 return True
             else:
+                print('Node registration unsuccesful')
                 return False
     except requests.exceptions.RequestException as e:
             return {'error': f'Request failed: {str(e)}'}
@@ -131,10 +166,9 @@ def register_node():
 if __name__ == '__main__':
     # Configure the scheduler with a timezone
     if register_node():
-        print('Node regsitration successful')
+        print(" ")
     else:
-         print('Node regsitration unsuccesful')
-         exit()
+        exit()
     scheduler = BackgroundScheduler(timezone='UTC')
     # Add a job that calls the external API every minute to get the task
     scheduler.add_job(call_external_api, 'interval', minutes=0.5)

@@ -19,6 +19,16 @@ logging.basicConfig(
     ]
 )
 
+class ExcludeJobLogFilter(logging.Filter):
+    def filter(self, record):
+        msg = record.getMessage()
+        return not ("Added job" in msg or "Job " in msg or "Running job" in msg)
+
+
+# Apply the filter to all handlers
+for handler in logging.root.handlers:
+    handler.addFilter(ExcludeJobLogFilter())
+
 
 def sign_s3_url(task_id,s3_url,user_private_key,wallet):
     try:

@@ -25,7 +25,15 @@ logging.basicConfig(
         logging.StreamHandler()          # Log to the console
     ]
 )
+class ExcludeJobLogFilter(logging.Filter):
+    def filter(self, record):
+        msg = record.getMessage()
+        return not ("Added job" in msg or "Job " in msg or "Running job" in msg)
 
+
+# Apply the filter to all handlers
+for handler in logging.root.handlers:
+    handler.addFilter(ExcludeJobLogFilter())
 
 def process_url(task_id):
     user_private_key = os.getenv('USER_PRIVATE_KEY')
@@ -35,25 +43,25 @@ def process_url(task_id):
     headers = {"Content-Type": "application/json"}
     # Call taskInfo_endpoint function with retrieved taskId to get the s3 url
     try:
-        print("Getting additional task info")
+        logging.info("Getting additional task info")
         response = requests.get(api_url, headers=headers)
         if response.status_code == 200:
             data = response.json()
             s3_url = data.get('s3_url')
             if not s3_url:
-                print("s3_url not found in API response.")
+                logging.error("s3_url not found in API response.")
                 return {'error':'s3_url not found in API response.'}
         else:
-            print(f"Failed to fetch data from API. Status code: {response.status_code}")
+            logging.error(f"Failed to fetch data from API. Status code: {response.status_code}")
     except requests.exceptions.RequestException as e:
-        print(f"Request to API failed: {str(e)}")
+        logging.error(f"Request to API failed: {str(e)}")
     
     #passing the s3 url for signing to sign_s3_url
     is_valid, params = sign_s3_url(task_id,s3_url,user_private_key,wallet)
 
     # if the process was completed, calling the /confrim endpoint in the main function to confrim the task
     if is_valid:
-        print("Sending verified task to backend")
+        logging.info("Sending verified task to backend")
         url = f"{main_server}/confirm"
         headers = {"Content-Type": "application/json"}
         try:
@@ -80,21 +88,21 @@ def call_external_api():
     headers = {"Content-Type": "application/json"}
     #calling the task endpoint and getting taskId 
     try:
-        print("Calling the backend for active tasks")
+        logging.info("Calling the backend for active tasks")
         response = requests.get(api_url, headers=headers)
         if response.status_code == 200:
             data = response.json()
             task_id = data.get('task_id')
             if not task_id:
-                print("No task assigned at the moment")
+                logging.info("No task assigned at the moment")
                 return
             # Taskid passed to process_url() fucntion
             result = process_url(task_id)
-            print(f"Result of the task: {result}")
+            logging.info(f"Result of the task: {result}")
         else:
-            print(f"Failed to fetch data from API. Status code: {response.status_code}")
+            logging.error(f"Failed to fetch data from API. Status code: {response.status_code}")
     except requests.exceptions.RequestException as e:
-        print(f"Request to API failed: {str(e)}")
+        logging.error(f"Request to API failed: {str(e)}")
 
 
 
@@ -144,7 +152,7 @@ def register_node():
         'port':port
     }
     info=getSystemInfo()
-    print(info)
+    #logging.info(info)
     try:
             # Make POST request to /confrim endpoint
             response = requests.post(api_url, json=params, headers=headers)
@@ -152,11 +160,11 @@ def register_node():
             if response.status_code == 200:
                  data = response.json()
                  id = data.get('id')
-                 print('Node regsitration successful')
-                 print(f"Your unique id is : {id}")
+                 logging.info('Node regsitration successful')
+                 logging.info(f"Your unique id is : {id}")
                  return True
             else:
-                print('Node registration unsuccesful')
+                logging.info('Node registration unsuccesful')
                 return False
     except requests.exceptions.RequestException as e:
             return {'error': f'Request failed: {str(e)}'}
@@ -166,17 +174,17 @@ def register_node():
 if __name__ == '__main__':
     # Configure the scheduler with a timezone
     if register_node():
-        print(" ")
+        logging.info(" ")
     else:
         exit()
     scheduler = BackgroundScheduler(timezone='UTC')
     # Add a job that calls the external API every minute to get the task
     scheduler.add_job(call_external_api, 'interval', minutes=0.5)
-    print('Scheduler started. Press Ctrl+C to exit.')
+   # logging.info('Scheduler started. Press Ctrl+C to exit.')
     scheduler.start()
     # Keep the script running
     try:
         while True:
             pass
     except (KeyboardInterrupt, SystemExit):
-        print("Exiting...")
+        logging.info("Exiting...")

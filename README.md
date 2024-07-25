@@ -2,7 +2,7 @@
 
 ## Description
 
-**PlayAI node** facilitates offchain computation tasks, specifically the validation of rawVideos recorded by users. RawVideos can be large in size, so distributing these tasks increases efficiency, and in turn, the users who run the nodes are rewarded.This git repo includes the client code that can be used to run the node.
+**PlayAI node** facilitates offchain computation tasks, specifically the validation of raw videos recorded by users. RawVideos can be large in size, so distributing these tasks increases efficiency, and in turn, the users who run the nodes are rewarded.This git repo includes the client code that can be used to run the node.
 
 ## Overview
 
@@ -16,7 +16,7 @@ The architecture involves simple communication between the Client and Server. Th
 
 ## Backend Server Functionalities
 
-- **Generate tasks**: Upon receiving rawVideo, generate tasks and define receiver clients.
+- **Generate tasks**: Upon receiving raw video, generate tasks and define receiver clients.
 - **Assign tasks**: Assign tasks to clients by checking their health status via the `/health` endpoint.
 - **Expose endpoints**: 
   - `/taskInfo`: For clients to fetch task information.
